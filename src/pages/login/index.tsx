@@ -1,14 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, replace, useAsyncValue, useNavigate } from "react-router-dom";
 import Input from "../../components/input";
 import { FormEvent, useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../services/firebase/firebaseConnection";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   function handleLogin(e: FormEvent) {
     e.preventDefault();
-    console.log(email, password);
+    if (email === "" || password === "") {
+      alert("Preencha todos os Campos");
+    }
+    signInWithEmailAndPassword(auth, email, password).then(() => {
+      navigate("/admin", { replace: true });
+    });
   }
   return (
     <div className="flex flex-col justify-center items-center w-full h-screen">
