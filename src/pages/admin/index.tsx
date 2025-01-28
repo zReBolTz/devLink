@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../../components/header";
 import Input from "../../components/input";
+import { FiTrash } from "react-icons/fi";
 
 const Admin = () => {
   const [linkInput, setLinkInput] = useState("");
@@ -54,17 +55,30 @@ const Admin = () => {
                 marginBottom: 0,
                 marginTop: 0,
                 backgroundColor: bgColorInput,
-                color: linkInput,
+                color: textColorInput,
               }}
             >
               <p>{linkInput}</p>
             </article>
           </div>
         )}
-        <button className="bg-blue-600 h-8 rounded-md cursor-pointer">
+        <button className="bg-blue-600 h-9 text-white font-medium rounded-md cursor-pointer mb-7">
           <span>Cadastrar</span>
         </button>
       </form>
+      <h2 className="font-bold text-white text-2xl">Meus Links</h2>
+
+      <article
+        className="flex justify-between items-center w-11/12 max-w-xl rounded py-3 px-2 mb-2 select-none"
+        style={{ backgroundColor: "#2563EB", color: "#fff" }}
+      >
+        <p>teste</p>
+        <div>
+          <button className="border border-dashed p-1 rounded">
+            <FiTrash size={18} color="#fff" />
+          </button>
+        </div>
+      </article>
     </div>
   );
 };
