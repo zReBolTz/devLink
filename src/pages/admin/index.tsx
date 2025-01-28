@@ -43,7 +43,25 @@ const Admin = () => {
             />
           </div>
         </section>
-        <button className="bg-blue-600 h-8 rounded-md">
+        {linkInput !== "" && (
+          <div className="flex justify-start items-center flex-col mb-7 p-2 border-gray-100/25 border rounded-md">
+            <label className="text-white font-medium mt-2 mb-3">
+              <span>Veja como está ficando:</span>
+            </label>
+            <article
+              className="w-11/12 max-w-lg flex flex-col items-center justify-between bg-zinc-900 rounded px-1 py-2"
+              style={{
+                marginBottom: 0,
+                marginTop: 0,
+                backgroundColor: bgColorInput,
+                color: linkInput,
+              }}
+            >
+              <p>{linkInput}</p>
+            </article>
+          </div>
+        )}
+        <button className="bg-blue-600 h-8 rounded-md cursor-pointer">
           <span>Cadastrar</span>
         </button>
       </form>
