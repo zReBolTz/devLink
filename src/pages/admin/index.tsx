@@ -1,15 +1,54 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Header from "../../components/header";
 import Input from "../../components/input";
 import { FiTrash } from "react-icons/fi";
-import { addDoc, collection } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
 
 const Admin = () => {
+  interface linkProps {
+    id: string;
+    name: string;
+    url: string;
+    bg: string;
+    color: string;
+  }
+
   const [linkInput, setLinkInput] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [textColorInput, setTextColorInput] = useState("#121212");
   const [bgColorInput, setBgColorInput] = useState("#f1f1f1");
+  const [listLinks, setListLinks] = useState<linkProps[]>([]);
+
+  useEffect(() => {
+    const collectionRef = collection(db, "links");
+    const queryRef = query(collectionRef, orderBy("created", "asc"));
+    const unSub = onSnapshot(queryRef, (Snapshot) => {
+      const list = [] as linkProps[];
+
+      Snapshot.forEach((item) => {
+        list.push({
+          id: item.id,
+          name: item.data().name,
+          url: item.data().url,
+          color: item.data().color,
+          bg: item.data().bgColor,
+        });
+      });
+      setListLinks(list);
+    });
+    return () => {
+      unSub();
+    };
+  }, []);
 
   async function handleRegister(e: FormEvent) {
     e.preventDefault();
@@ -28,6 +67,10 @@ const Admin = () => {
       .catch((error) => {
         console.log(error);
       });
+  }
+  async function handleDeleteLink(id: string) {
+    const docRef = doc(db, "links", id);
+    await deleteDoc(docRef);
   }
   return (
     <div className="flex flex-col items-center min-h-screen mt-7 px-2 ">
@@ -92,17 +135,23 @@ const Admin = () => {
       </form>
       <h2 className="font-bold text-white text-2xl">Meus Links</h2>
 
-      <article
-        className="flex justify-between items-center w-11/12 max-w-xl rounded py-3 px-2 mb-2 select-none"
-        style={{ backgroundColor: "#2563EB", color: "#fff" }}
-      >
-        <p>teste</p>
-        <div>
-          <button className="border border-dashed p-1 rounded cursor-pointer">
-            <FiTrash size={18} color="#fff" />
-          </button>
-        </div>
-      </article>
+      {listLinks.map((item) => (
+        <article
+          key={item.id}
+          className="flex justify-between items-center w-11/12 max-w-xl rounded py-3 px-2 mb-2 select-none"
+          style={{ backgroundColor: item.bg, color: item.color }}
+        >
+          <p>{item.name}</p>
+          <div>
+            <button
+              className=" p-1 rounded cursor-pointer bg-neutral-900"
+              onClick={() => handleDeleteLink(item.id)}
+            >
+              <FiTrash size={18} color="#fff" />
+            </button>
+          </div>
+        </article>
+      ))}
     </div>
   );
 };
