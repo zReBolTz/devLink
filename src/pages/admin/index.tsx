@@ -1,17 +1,41 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Header from "../../components/header";
 import Input from "../../components/input";
 import { FiTrash } from "react-icons/fi";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../services/firebase/firebaseConnection";
 
 const Admin = () => {
   const [linkInput, setLinkInput] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [textColorInput, setTextColorInput] = useState("#121212");
   const [bgColorInput, setBgColorInput] = useState("#f1f1f1");
+
+  async function handleRegister(e: FormEvent) {
+    e.preventDefault();
+    //Criando Coleção e inserindo os dados
+    addDoc(collection(db, "links"), {
+      name: linkInput,
+      url: urlInput,
+      color: textColorInput,
+      bgColor: bgColorInput,
+      created: new Date(),
+    })
+      .then(() => {
+        setLinkInput("");
+        setUrlInput("");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div className="flex flex-col items-center min-h-screen mt-7 px-2 ">
       <Header />
-      <form className="w-full max-w-xl flex flex-col mt-8 mb-3">
+      <form
+        className="w-full max-w-xl flex flex-col mt-8 mb-3"
+        onSubmit={handleRegister}
+      >
         <label className="text-white mt-2 font-medium mb-2">Nome do link</label>
         <Input
           placeholder="Digite o nome do link..."
@@ -74,7 +98,7 @@ const Admin = () => {
       >
         <p>teste</p>
         <div>
-          <button className="border border-dashed p-1 rounded">
+          <button className="border border-dashed p-1 rounded cursor-pointer">
             <FiTrash size={18} color="#fff" />
           </button>
         </div>
