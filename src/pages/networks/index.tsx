@@ -10,7 +10,7 @@ const Network = () => {
   const [youtube, setYoutube] = useState("");
 
   useEffect(() => {
-    const docRef = doc(db, "social", "links");
+    const docRef = doc(db, "social", "link");
     getDoc(docRef).then((snapshot) => {
       if (snapshot !== undefined) {
         setFacebook(snapshot.data()?.facebook);
@@ -21,7 +21,7 @@ const Network = () => {
   }, []);
   async function handleSaveSocials(e: FormEvent) {
     e.preventDefault();
-    setDoc(doc(db, "social", "links"), {
+    setDoc(doc(db, "social", "link"), {
       facebook: facebook,
       instagram: instagram,
       youtube: youtube,
@@ -40,18 +40,21 @@ const Network = () => {
       >
         <label className="font-medium text-white mt-2 mb-2">Facebook</label>
         <Input
+          type="url"
           placeholder="https://www.facebook.com/BillGates/ "
           value={facebook}
           onChange={(e) => setFacebook(e.target.value)}
         />
         <label className="font-medium text-white mt-2 mb-2">Instagram</label>
         <Input
+          type="url"
           placeholder="https://www.instagram.com/stevejobsok/"
           value={instagram}
           onChange={(e) => setInstagram(e.target.value)}
         />
         <label className="font-medium text-white mt-2 mb-2">Youtube</label>
         <Input
+          type="url"
           placeholder="https://www.youtube.com/@MrBeast"
           value={youtube}
           onChange={(e) => setYoutube(e.target.value)}
