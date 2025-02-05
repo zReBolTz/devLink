@@ -1,21 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/input";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../services/firebase/firebaseConnection";
+import { UserContext } from "../../context/userContext";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const { id, setId, setEmail } = useContext(UserContext);
+
   function handleLogin(e: FormEvent) {
     e.preventDefault();
-    if (email === "" || password === "") {
+    if (userEmail === "" || password === "") {
       alert("Preencha todos os Campos");
     }
-    signInWithEmailAndPassword(auth, email, password).then(() => {
-      navigate("/admin", { replace: true });
+    signInWithEmailAndPassword(auth, userEmail, password).then(() => {
+      if (
+        auth.currentUser &&
+        auth.currentUser.uid !== null &&
+        auth.currentUser.email !== null
+      ) {
+        setId(auth.currentUser.uid);
+        setEmail(auth.currentUser.email);
+        setUserEmail("");
+        setPassword("");
+        navigate(`/admin`, { replace: true });
+      }
     });
   }
   return (
@@ -35,8 +48,8 @@ const Login = () => {
         <Input
           placeholder="Digite o seu Email..."
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={userEmail}
+          onChange={(e) => setUserEmail(e.target.value)}
         />
         <Input
           placeholder="********"

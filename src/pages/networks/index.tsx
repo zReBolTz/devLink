@@ -1,32 +1,40 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import Header from "../../components/header";
 import Input from "../../components/input";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
+import { UserContext } from "../../context/userContext";
 
 const Network = () => {
   const [facebook, setFacebook] = useState("");
   const [instagram, setInstagram] = useState("");
   const [youtube, setYoutube] = useState("");
 
-  useEffect(() => {
-    const docRef = doc(db, "social", "link");
-    getDoc(docRef).then((snapshot) => {
-      if (snapshot !== undefined) {
-        setFacebook(snapshot.data()?.facebook);
-        setInstagram(snapshot.data()?.instagram);
-        setYoutube(snapshot.data()?.youtube);
-      }
-    });
-  }, []);
+  const { id } = useContext(UserContext);
+
   async function handleSaveSocials(e: FormEvent) {
     e.preventDefault();
-    setDoc(doc(db, "social", "link"), {
+    await setDoc(doc(db, "social", id), {
+      userId: id,
       facebook: facebook,
       instagram: instagram,
       youtube: youtube,
     });
   }
+
+  useEffect(() => {
+    async function loadingLinks() {
+      const docRef = doc(db, "social", id);
+      await getDoc(docRef).then((snapshot) => {
+        if (snapshot !== undefined) {
+          setFacebook(snapshot.data()?.facebook);
+          setInstagram(snapshot.data()?.instagram);
+          setYoutube(snapshot.data()?.youtube);
+        }
+      });
+    }
+    loadingLinks();
+  }, []);
   return (
     <div className="flex flex-col min-h-screen mwx-w-xl w-full items-center mt-7 px-2">
       <Header />

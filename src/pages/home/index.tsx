@@ -8,8 +8,10 @@ import {
   getDocs,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
+import { Navigate, useParams } from "react-router-dom";
 
 const home = () => {
   interface linkProps {
@@ -19,6 +21,7 @@ const home = () => {
     bg: string;
     color: string;
   }
+  const { id } = useParams();
 
   interface socialLinksProps {
     facebook: string;
@@ -27,11 +30,17 @@ const home = () => {
   }
   const [links, setLinks] = useState<linkProps[]>([]);
   const [socialLinks, setSocialLinks] = useState<socialLinksProps>();
+  const [name, setName] = useState("");
 
   useEffect(() => {
     function loadLinks() {
       const collectionRef = collection(db, "links");
-      const queryRef = query(collectionRef, orderBy("created", "asc"));
+      const queryRef = query(
+        collectionRef,
+        where("userId", "==", `${id}`),
+        orderBy("createdAt", "asc")
+      );
+      console.log(queryRef);
       getDocs(queryRef).then((snapshot) => {
         let list = [] as linkProps[];
         snapshot.forEach((doc) => {
@@ -51,25 +60,44 @@ const home = () => {
   }, []);
 
   useEffect(() => {
-    function loadSocialLinks() {
-      const docRef = doc(db, "social", "link");
-
-      getDoc(docRef).then((snapshot) => {
-        if (snapshot.data() !== undefined) {
-          setSocialLinks({
-            youtube: snapshot.data()?.facebook,
-            instagram: snapshot.data()?.instagram,
-            facebook: snapshot.data()?.facebook,
-          });
-        }
+    async function loadingUserInfo() {
+      const docRef = doc(db, "usersInfo", id || "EtT8gKPRTcbNQCW6IbaYpW3tIEr1");
+      await getDoc(docRef).then((snapshot) => {
+        setName(snapshot.data()?.name);
       });
     }
-    loadSocialLinks();
-  }, []);
+
+    loadingUserInfo();
+  }, [id]);
+
+  useEffect(() => {
+    async function loadingSocialLinks() {
+      if (!id) {
+        return;
+      }
+
+      const docRef = doc(db, "social", id || "EtT8gKPRTcbNQCW6IbaYpW3tIEr1");
+      const snapshot = await getDoc(docRef);
+
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setSocialLinks({
+          youtube: data?.youtube || "",
+          instagram: data?.instagram || "",
+          facebook: data?.facebook || "",
+        });
+      }
+    }
+
+    loadingSocialLinks();
+  }, [id]);
+  if (id === null || id === undefined) {
+    return <Navigate to={"/EtT8gKPRTcbNQCW6IbaYpW3tIEr1"} />;
+  }
   return (
     <div className="flex flex-col w-full justify-center items-center py-4">
       <h1 className="md:text-4xl text-3xl font-bold text-white mt-20">
-        Willian Ferreira
+        {name}
       </h1>
       <span className="text-gray-50 mb-5 mt-3">Veja meus links 👇🏻</span>
       <main className="flex flex-col w-11/12 max-w-xl text-center">

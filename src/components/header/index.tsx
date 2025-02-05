@@ -2,16 +2,22 @@ import { signOut } from "firebase/auth";
 import { BiLogOut } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { auth } from "../../services/firebase/firebaseConnection";
+import { UserContext } from "../../context/userContext";
+import { useContext } from "react";
 
 const Header = () => {
+  const { id, setId } = useContext(UserContext);
+
   function handlesignOut() {
+    setId("");
     signOut(auth);
   }
+
   return (
     <header className="w-full max-w-2xl mt-4 px-1">
       <nav className="w-full bg-white h-12 flex items-center justify-between rounded-md px-3">
         <div className="flex gap-3 font-medium">
-          <Link to="/">
+          <Link to={`/${id}`}>
             <span>Home</span>
           </Link>
           <Link to="/admin">

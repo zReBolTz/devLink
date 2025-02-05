@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import Header from "../../components/header";
 import Input from "../../components/input";
 import { FiTrash } from "react-icons/fi";
@@ -10,8 +10,10 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
+import { UserContext } from "../../context/userContext";
 
 const Admin = () => {
   interface linkProps {
@@ -28,9 +30,15 @@ const Admin = () => {
   const [bgColorInput, setBgColorInput] = useState("#f1f1f1");
   const [listLinks, setListLinks] = useState<linkProps[]>([]);
 
+  const { id } = useContext(UserContext);
+
   useEffect(() => {
     const collectionRef = collection(db, "links");
-    const queryRef = query(collectionRef, orderBy("created", "asc"));
+    const queryRef = query(
+      collectionRef,
+      where("userId", "==", `${id}`),
+      orderBy("createdAt", "asc")
+    );
     const unSub = onSnapshot(queryRef, (Snapshot) => {
       const list = [] as linkProps[];
 
@@ -53,8 +61,9 @@ const Admin = () => {
   async function handleRegister(e: FormEvent) {
     e.preventDefault();
     //Criando Coleção e inserindo os dados
-    addDoc(collection(db, "links"), {
+    await addDoc(collection(db, "links"), {
       name: linkInput,
+      userId: id,
       url: urlInput,
       color: textColorInput,
       bgColor: bgColorInput,
@@ -68,6 +77,7 @@ const Admin = () => {
         console.log(error);
       });
   }
+
   async function handleDeleteLink(id: string) {
     const docRef = doc(db, "links", id);
     await deleteDoc(docRef);

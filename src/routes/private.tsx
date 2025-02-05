@@ -1,7 +1,8 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { auth } from "../services/firebase/firebaseConnection";
 import { Navigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 
 interface privateProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface privateProps {
 const Private = ({ children }: privateProps): any => {
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
+  const { setId, setEmail } = useContext(UserContext);
   useEffect(() => {
     const onSub = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -17,6 +19,9 @@ const Private = ({ children }: privateProps): any => {
           uid: user?.uid,
           email: user?.email,
         };
+        setEmail(user.email as string);
+        setId(user.uid as string);
+
         localStorage.setItem("@devLinks", JSON.stringify(userData));
         setLoading(false);
         setSigned(true);
