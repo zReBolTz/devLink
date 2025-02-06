@@ -11,7 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
-import { Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 
 const home = () => {
   interface linkProps {
@@ -38,9 +38,9 @@ const home = () => {
       const queryRef = query(
         collectionRef,
         where("userId", "==", `${id}`),
-        orderBy("createdAt", "asc")
+        orderBy("created", "asc")
       );
-      console.log(queryRef);
+
       getDocs(queryRef).then((snapshot) => {
         let list = [] as linkProps[];
         snapshot.forEach((doc) => {
@@ -57,7 +57,7 @@ const home = () => {
     }
 
     loadLinks();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     async function loadingUserInfo() {
@@ -132,6 +132,12 @@ const home = () => {
           </div>
         )}
       </main>
+      <h1 className="text-white mt-2">
+        Ainda não tem conta?{" "}
+        <Link to="/register" className="font-medium text-blue-600">
+          Cadastre-se
+        </Link>{" "}
+      </h1>
     </div>
   );
 };
