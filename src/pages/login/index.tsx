@@ -4,6 +4,7 @@ import { FormEvent, useContext, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../services/firebase/firebaseConnection";
 import { UserContext } from "../../context/userContext";
+import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
   const [userEmail, setUserEmail] = useState("");
@@ -14,22 +15,45 @@ const Login = () => {
 
   function handleLogin(e: FormEvent) {
     e.preventDefault();
-    if (userEmail === "" || password === "") {
-      alert("Preencha todos os Campos");
+    if (!userEmail || !password) {
+      toast.error("Preencha todos os campos ");
     }
-    signInWithEmailAndPassword(auth, userEmail, password).then(() => {
-      if (
-        auth.currentUser &&
-        auth.currentUser.uid !== null &&
-        auth.currentUser.email !== null
-      ) {
-        setId(auth.currentUser.uid);
-        setEmail(auth.currentUser.email);
-        setUserEmail("");
-        setPassword("");
-        navigate(`/admin`, { replace: true });
-      }
-    });
+    signInWithEmailAndPassword(auth, userEmail, password)
+      .then(() => {
+        if (
+          auth.currentUser &&
+          auth.currentUser.uid !== null &&
+          auth.currentUser.email !== null
+        ) {
+          setId(auth.currentUser.uid);
+          setEmail(auth.currentUser.email);
+          setUserEmail("");
+          setPassword("");
+          navigate(`/admin`, { replace: true });
+        }
+      })
+      .catch((error) => {
+        switch (error.code) {
+          case "auth/invalid-credential":
+            toast.error("Credenciais inválidas");
+            break;
+          case "auth/user-not-found":
+            toast.error("Usuário não encontrado");
+            break;
+          case "auth/wrong-password":
+            toast.error("Senha incorreta");
+            break;
+          case "auth/email-already-in-use":
+            toast.error("Este email já está em uso");
+            break;
+          case "auth/weak-password":
+            toast.error("A senha é muito fraca");
+            break;
+          case "auth/network-request-failed":
+            toast.error("Falha na conexão de rede");
+            break;
+        }
+      });
   }
   return (
     <div className="flex flex-col justify-center items-center w-full h-screen">
@@ -64,6 +88,15 @@ const Login = () => {
           Login
         </button>
       </form>
+
+      <h1 className="text-white mt-2">
+        Ainda não tem conta?{" "}
+        <Link to="/register" className="font-medium text-blue-600">
+          Cadastre-se
+        </Link>{" "}
+      </h1>
+
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

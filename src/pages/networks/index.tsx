@@ -4,6 +4,8 @@ import Input from "../../components/input";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
 import { UserContext } from "../../context/userContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Network = () => {
   const [facebook, setFacebook] = useState("");
@@ -20,6 +22,7 @@ const Network = () => {
       instagram: instagram,
       youtube: youtube,
     });
+    toast.success("Link salvo com sucesso!");
   }
 
   useEffect(() => {
@@ -27,9 +30,9 @@ const Network = () => {
       const docRef = doc(db, "social", id);
       await getDoc(docRef).then((snapshot) => {
         if (snapshot !== undefined) {
-          setFacebook(snapshot.data()?.facebook);
-          setInstagram(snapshot.data()?.instagram);
-          setYoutube(snapshot.data()?.youtube);
+          setFacebook(snapshot.data()?.facebook || "");
+          setInstagram(snapshot.data()?.instagram || "");
+          setYoutube(snapshot.data()?.youtube || "");
         }
       });
     }
@@ -71,6 +74,7 @@ const Network = () => {
           Salvar
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 };

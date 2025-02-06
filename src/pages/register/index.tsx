@@ -5,6 +5,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../services/firebase/firebaseConnection";
 import { doc, setDoc } from "firebase/firestore";
 import { UserContext } from "../../context/userContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -29,14 +31,22 @@ const RegisterPage = () => {
           await setDoc(doc(db, "usersInfo", user.uid), {
             name,
           });
+          toast.success("Conta Criada com sucesso");
           setId(user.uid);
           navigate(`/login`, { replace: true });
         } catch (error) {
-          console.log(error);
+          toast.error("Preencha todos os campos");
         }
       }
     }
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error("Preencha todos os campos");
+    }
+    if (password != confirmPassword) {
+      toast.error("As senhas devem ser iguais");
+    }
   }
+
   return (
     <div className="flex flex-col justify-center items-center w-full h-screen">
       <Link to={id === "" ? "/" : `/${id}`}>
@@ -84,6 +94,7 @@ const RegisterPage = () => {
           Cadastrar
         </button>
       </form>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
