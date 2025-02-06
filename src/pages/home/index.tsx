@@ -79,7 +79,11 @@ const home = () => {
       const docRef = doc(db, "social", id || "EtT8gKPRTcbNQCW6IbaYpW3tIEr1");
       const snapshot = await getDoc(docRef);
 
-      if (snapshot.exists()) {
+      if (
+        snapshot.data()?.youtube ||
+        snapshot.data()?.instagram ||
+        snapshot.data()?.facebook
+      ) {
         const data = snapshot.data();
         setSocialLinks({
           youtube: data?.youtube || "",

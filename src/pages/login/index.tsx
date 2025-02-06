@@ -11,7 +11,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const { id, setId, setEmail } = useContext(UserContext);
+  const { setId, setEmail } = useContext(UserContext);
 
   function handleLogin(e: FormEvent) {
     e.preventDefault();

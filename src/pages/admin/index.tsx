@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
 import { UserContext } from "../../context/userContext";
-import { ToastContainer } from "react-toastify";
 
 const Admin = () => {
   interface linkProps {
