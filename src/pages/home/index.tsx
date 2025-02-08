@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
 import { Link, Navigate, useParams } from "react-router-dom";
+import Loading from "../../components/loading";
 
 const home = () => {
   interface linkProps {
@@ -31,6 +32,7 @@ const home = () => {
   const [links, setLinks] = useState<linkProps[]>([]);
   const [socialLinks, setSocialLinks] = useState<socialLinksProps>();
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     function loadLinks() {
@@ -53,6 +55,7 @@ const home = () => {
           });
         });
         setLinks(list);
+        setIsLoading(false);
       });
     }
 
@@ -92,14 +95,18 @@ const home = () => {
         });
       }
     }
-
     loadingSocialLinks();
   }, [id]);
+
   if (id === null || id === undefined) {
     return <Navigate to={"/EtT8gKPRTcbNQCW6IbaYpW3tIEr1"} />;
   }
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <div className="flex flex-col w-full justify-center items-center py-4">
+      {isLoading}
       <h1 className="md:text-4xl text-3xl font-bold text-white mt-20">
         {name}
       </h1>

@@ -35,7 +35,7 @@ const Private = ({ children }: privateProps): any => {
     };
   }, []);
   if (loading) {
-    return <div></div>;
+    return console.log("testando");
   }
   if (!signed) {
     return <Navigate to="/login" />;
