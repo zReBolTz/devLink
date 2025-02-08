@@ -3,6 +3,7 @@ import { ReactNode, useContext, useEffect, useState } from "react";
 import { auth } from "../services/firebase/firebaseConnection";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import Loading from "../components/loading";
 
 interface privateProps {
   children: ReactNode;
@@ -35,7 +36,7 @@ const Private = ({ children }: privateProps): any => {
     };
   }, []);
   if (loading) {
-    return console.log("testando");
+    return <Loading />;
   }
   if (!signed) {
     return <Navigate to="/login" />;
