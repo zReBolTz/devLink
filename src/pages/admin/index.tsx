@@ -110,6 +110,7 @@ const Admin = () => {
               type="color"
               value={textColorInput}
               onChange={(e) => setTextColorInput(e.target.value)}
+              required
             />
           </div>
           <div className="flex gap-2">
@@ -118,6 +119,7 @@ const Admin = () => {
               type="color"
               value={bgColorInput}
               onChange={(e) => setBgColorInput(e.target.value)}
+              required
             />
           </div>
         </section>
