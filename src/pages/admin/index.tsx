@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../services/firebase/firebaseConnection";
 import { UserContext } from "../../context/userContext";
+import { toast, ToastContainer } from "react-toastify";
 
 const Admin = () => {
   interface linkProps {
@@ -60,6 +61,11 @@ const Admin = () => {
 
   async function handleRegister(e: FormEvent) {
     e.preventDefault();
+
+    if (linkInput === "" || urlInput === "") {
+      toast.info("Preencha todos os campos!");
+      return;
+    }
     //Criando Coleção e inserindo os dados
     await addDoc(collection(db, "links"), {
       name: linkInput,
@@ -164,6 +170,7 @@ const Admin = () => {
           </div>
         </article>
       ))}
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
